@@ -1,5 +1,7 @@
 package fr.bretzel.mysql;
 
+import fr.bretzel.mysql.api.executable.IExecutableQuery;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,10 +24,10 @@ public class SQL {
         }
     }
 
-    public ResultSet query(String request) {
+    public ResultSet executeQuery(IExecutableQuery query) {
         ResultSet result = null;
         try {
-            result = connection.getStatement().executeQuery(request);
+            result = connection.getStatement().executeQuery(query.get());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -34,11 +36,26 @@ public class SQL {
 
     public boolean contains(String value) {
         try {
-            PreparedStatement statement = connection.getConnection().prepareStatement(String.format(Util.SELECT_ALL_FROM_TABLE_WHERE_KEY, table, value));
+            String prepare = String.format(Util.SELECT_ALL_FROM_TABLE_WHERE_KEY, table, value);
+            System.out.print(prepare);
+            PreparedStatement statement = connection.getConnection().prepareStatement(prepare);
             boolean result = statement.executeQuery().next();
             statement.close();
             return result;
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean updateFor(String column, String value, String columnFor, String idFor) {
+        try {
+            String prepare = String.format(Util.UPDATE_TABLE_SET_FOR_COLUMN, table, column, value, columnFor, idFor);
+            System.out.print(prepare);
+            PreparedStatement statement = connection.getConnection().prepareStatement(prepare);
+            statement.executeQuery();
+            return true;
+        } catch (Exception e) {
+            System.out.print(e.getLocalizedMessage());
             return false;
         }
     }

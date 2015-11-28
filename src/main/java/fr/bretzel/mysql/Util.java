@@ -6,5 +6,6 @@ package fr.bretzel.mysql;
 public class Util {
 
     public static String CREATE_TABLE_IF_NOT_EXIST = "CREATE TABLE IF NOT EXISTS %s";
+    public static String UPDATE_TABLE_SET_FOR_COLUMN = "UPDATE %s SET %s = '%s' WHERE %s = %s";
     public static String SELECT_ALL_FROM_TABLE_WHERE_KEY = "SELECT * FROM '%s' WHERE %s=?";
 }

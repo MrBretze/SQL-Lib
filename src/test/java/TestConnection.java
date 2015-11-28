@@ -24,6 +24,10 @@ public class TestConnection {
         SQL sql = new SQL(connection, "sql");
         sql.contains("test");
         Assert.assertEquals(sql.contains("test"), false);
+
+        SQL sql1 = new SQL(connection, "sql");
+        sql1.updateFor("test", "test", "test", "test");
+        Assert.assertEquals(sql1.contains("test"), true);
         connection.close();
     }
 }
