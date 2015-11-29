@@ -1,6 +1,10 @@
 package fr.bretzel.mysql;
 
+import fr.bretzel.mysql.api.ITable;
+import fr.bretzel.mysql.api.executable.IExecutable;
 import fr.bretzel.mysql.api.executable.IExecutableQuery;
+import fr.bretzel.mysql.api.executable.IExecutableUpdate;
+import fr.bretzel.mysql.api.parameters.ITableParameter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,11 +16,11 @@ import java.sql.SQLException;
 public class SQL {
 
     private Connection connection;
-    private String table;
+    private ITable table;
 
-    public SQL(Connection connection, String table) {
+    public SQL(Connection connection, ITableParameter parameter) {
         this.connection = connection;
-        this.table = table;
+        this.table = parameter.getTable();
         try {
             this.connection.getStatement().execute(String.format(Util.CREATE_TABLE_IF_NOT_EXIST, table));
         } catch (SQLException e) {
@@ -25,13 +29,24 @@ public class SQL {
     }
 
     public ResultSet executeQuery(IExecutableQuery query) {
-        ResultSet result = null;
+        ResultSet result;
         try {
             result = connection.getStatement().executeQuery(query.get());
+            return result;
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.print(e.getLocalizedMessage());
+            return null;
         }
-        return result;
+    }
+
+    public void execute(IExecutable executable) {
+        try {
+            connection.getStatement().execute(executable.get());
+            return;
+        } catch (SQLException e) {
+            System.out.print(e.getLocalizedMessage());
+            return;
+        }
     }
 
     public boolean contains(String value) {
@@ -47,11 +62,9 @@ public class SQL {
         }
     }
 
-    public boolean updateFor(String column, String value, String columnFor, String idFor) {
+    public boolean updateFor(IExecutableUpdate update) {
         try {
-            String prepare = String.format(Util.UPDATE_TABLE_SET_FOR_COLUMN, table, column, value, columnFor, idFor);
-            System.out.print(prepare);
-            PreparedStatement statement = connection.getConnection().prepareStatement(prepare);
+            PreparedStatement statement = connection.getConnection().prepareStatement(update.get());
             statement.executeQuery();
             return true;
         } catch (Exception e) {
@@ -60,7 +73,7 @@ public class SQL {
         }
     }
 
-    public String getTable() {
+    public ITable getTable() {
         return table;
     }
 
