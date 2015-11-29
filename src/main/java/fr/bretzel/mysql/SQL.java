@@ -41,6 +41,10 @@ public class SQL {
 
     public void execute(IExecutable executable) {
         try {
+            if (executable instanceof IExecutableQuery)
+                executeQuery((IExecutableQuery) executable);
+            else if (executable instanceof IExecutableUpdate)
+                executeUpdate((IExecutableUpdate) executable);
             connection.getStatement().execute(executable.get());
             return;
         } catch (SQLException e) {
@@ -62,7 +66,7 @@ public class SQL {
         }
     }
 
-    public boolean updateFor(IExecutableUpdate update) {
+    public boolean executeUpdate(IExecutableUpdate update) {
         try {
             PreparedStatement statement = connection.getConnection().prepareStatement(update.get());
             statement.executeQuery();
