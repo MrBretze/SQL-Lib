@@ -1,6 +1,7 @@
 package fr.bretzel.mysql;
 
 import fr.bretzel.mysql.api.ITable;
+import fr.bretzel.mysql.api.executable.IExecutableUpdate;
 import fr.bretzel.mysql.api.parameters.ITableParameter;
 
 /**
@@ -12,11 +13,17 @@ public class Table implements ITable {
 
     public Table(ITableParameter parameter) {
         this.parameter = parameter;
-        parameter.build();
+        if (!parameter.isBuild())
+            parameter.build();
     }
 
     @Override
     public ITableParameter getParameter() {
         return parameter;
+    }
+
+    @Override
+    public IExecutableUpdate getExecutableUpdate() {
+        return parameter.getExecutableUpdate();
     }
 }

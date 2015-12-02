@@ -20,6 +20,7 @@ public class SQL {
 
     public SQL(Connection connection, ITableParameter table) {
         this.connection = connection;
+        table.build();
         this.table = new Table(table);
     }
 

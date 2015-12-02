@@ -1,5 +1,6 @@
 package fr.bretzel.mysql.api;
 
+import fr.bretzel.mysql.api.executable.IExecutableUpdate;
 import fr.bretzel.mysql.api.parameters.ITableParameter;
 
 /**
@@ -8,5 +9,7 @@ import fr.bretzel.mysql.api.parameters.ITableParameter;
 public interface ITable {
 
     ITableParameter getParameter();
+
+    IExecutableUpdate getExecutableUpdate();
 
 }
