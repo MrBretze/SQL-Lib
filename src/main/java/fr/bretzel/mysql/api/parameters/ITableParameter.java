@@ -9,4 +9,6 @@ public interface ITableParameter extends IParameter {
 
     ITable getTable();
 
+    void setTable(ITable table);
+
 }

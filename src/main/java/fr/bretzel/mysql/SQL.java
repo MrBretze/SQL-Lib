@@ -18,14 +18,9 @@ public class SQL {
     private Connection connection;
     private ITable table;
 
-    public SQL(Connection connection, ITableParameter parameter) {
+    public SQL(Connection connection, ITableParameter table) {
         this.connection = connection;
-        this.table = parameter.getTable();
-        try {
-            this.connection.getStatement().execute(String.format(Util.CREATE_TABLE_IF_NOT_EXIST, table));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        this.table = new Table(table);
     }
 
     public ResultSet executeQuery(IExecutableQuery query) {

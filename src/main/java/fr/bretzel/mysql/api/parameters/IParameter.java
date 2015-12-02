@@ -16,4 +16,8 @@ public interface IParameter {
     int size();
 
     IParameter[] getParameters();
+
+    boolean isBuild();
+
+    void build();
 }
