@@ -5,8 +5,6 @@ import fr.bretzel.mysql.api.executable.IExecutableUpdate;
 import fr.bretzel.mysql.api.parameters.IParameter;
 import fr.bretzel.mysql.api.parameters.ITableParameter;
 
-import java.math.BigDecimal;
-import java.sql.*;
 import java.util.LinkedList;
 
 /**
@@ -17,9 +15,13 @@ public class TableParameter implements ITableParameter {
     private ITable table = null;
     private boolean build = false;
 
+    private LinkedList<ITableParameter> list = new LinkedList<>();
+
     private IExecutableUpdate executableUpdate;
 
-    private LinkedList<ITableParameter> list = new LinkedList<>();
+    public TableParameter(IExecutableUpdate update) {
+        this.executableUpdate = update;
+    }
 
     @Override
     public ITable getTable() {
@@ -89,42 +91,5 @@ public class TableParameter implements ITableParameter {
     @Override
     public IExecutableUpdate getExecutableUpdate() {
         return executableUpdate;
-    }
-
-    public enum DataType {
-
-        VARCHAR(String.class),
-        CHAR(String.class),
-        LONG_VARCHAR(String.class),
-        BIT(Boolean.class),
-        NUMERIC(BigDecimal.class),
-        TINYINT(Byte.TYPE),
-        SMALLINT(Short.TYPE),
-        INTEGER(Integer.TYPE),
-        BIGINT(Long.TYPE),
-        REAL(Float.TYPE),
-        FLOAT(Float.TYPE),
-        DOUBLE(Double.TYPE),
-        VARBINARY(Byte.TYPE),
-        BINARY(Byte.TYPE),
-        DATE(Date.class),
-        TIME(Time.class),
-        TIMESTAMP(Timestamp.class),
-        CLOB(Clob.class),
-        BLOB(Blob.class),
-        ARRAY(Array.class),
-        REF(Ref.class),
-        STRUCT(Struct.class),
-        SQLXML(SQLXML.class);
-
-        private Class<?> returnType;
-
-        DataType(Class<?> returnType) {
-            this.returnType = returnType;
-        }
-
-        public Class<?> getReturnType() {
-            return returnType;
-        }
     }
 }
