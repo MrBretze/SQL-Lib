@@ -1,7 +1,6 @@
 package fr.bretzel.mysql.parameter;
 
 import fr.bretzel.mysql.api.ITable;
-import fr.bretzel.mysql.api.executable.IExecutableUpdate;
 import fr.bretzel.mysql.api.parameters.IParameter;
 import fr.bretzel.mysql.api.parameters.ITableParameter;
 
@@ -17,10 +16,10 @@ public class TableParameter implements ITableParameter {
 
     private LinkedList<ITableParameter> list = new LinkedList<>();
 
-    private IExecutableUpdate executableUpdate;
-
-    public TableParameter(IExecutableUpdate update) {
-        this.executableUpdate = update;
+    public TableParameter(ITableParameter... tableParameters) {
+        for (ITableParameter parameter: tableParameters) {
+            list.add(parameter);
+        }
     }
 
     @Override
@@ -86,10 +85,5 @@ public class TableParameter implements ITableParameter {
     @Override
     public IParameter[] getParameters() {
         return (IParameter[]) list.toArray();
-    }
-
-    @Override
-    public IExecutableUpdate getExecutableUpdate() {
-        return executableUpdate;
     }
 }

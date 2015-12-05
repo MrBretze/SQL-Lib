@@ -1,5 +1,7 @@
 package fr.bretzel.mysql;
 
+import fr.bretzel.mysql.api.DataBaseType;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.DriverManager;
@@ -14,10 +16,14 @@ public class Connection {
     private String db = "null";
     private java.sql.Connection connection = null;
     private Statement statement = null;
+    private DataBaseType type = DataBaseType.SQLite;
 
-    public Connection(File db) {
+    public Connection(File db, DataBaseType type) {
         if (db == null)
-            throw new IllegalArgumentException("The database is set to null !");
+            throw new IllegalArgumentException("The file cant not be null !");
+
+        if (type == null)
+            throw new IllegalArgumentException("The DataBaseType cant not be null !");
 
         if (!db.exists()) {
             db.getParentFile().mkdir();
@@ -38,7 +44,7 @@ public class Connection {
     public synchronized void connect() {
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + db);
+            connection = DriverManager.getConnection("jdbc:" + type.getType() + ":" + db);
             statement = connection.createStatement();
         } catch (Exception e) {
             e.printStackTrace();
