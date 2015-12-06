@@ -18,7 +18,15 @@ public class Connection {
     private Statement statement = null;
     private DataBaseType type = DataBaseType.SQLite;
 
+    private boolean local = false;
+    private int port = 3306;
+    private String host;
+    private String user;
+    private String pass;
+
     public Connection(File db, DataBaseType type) {
+        local = true;
+
         if (db == null)
             throw new IllegalArgumentException("The file cant not be null !");
 
@@ -37,18 +45,17 @@ public class Connection {
         this.db = db.getAbsolutePath();
     }
 
-    public Connection(String host, String user, String s) {
-        //TODO
+    public Connection(String host, String user, int port, String table, DataBaseType type) {
+        this.type = type;
+        this.db = table;
+        this.user = user;
+        this.host = host;
+        this.port = port;
     }
 
     public synchronized void connect() {
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:" + type.getType() + ":" + db);
-            statement = connection.createStatement();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (local) localConnect();
+        else serverConnect();
     }
 
     public synchronized void close() {
@@ -56,6 +63,26 @@ public class Connection {
             connection.close();
             statement.close();
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void localConnect() {
+        try {
+            Class.forName(type.getDriver()).newInstance();
+            connection = DriverManager.getConnection("jdbc:" + type.getType() + ":" + db);
+            statement = connection.createStatement();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void serverConnect() {
+        try {
+            Class.forName(type.getDriver()).newInstance();
+            connection = DriverManager.getConnection("jdbc:" + type.getType() + "://" + host + ":" + port + "/" + db + "?user=" + user + "&password=" + pass);
+            statement = connection.createStatement();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
