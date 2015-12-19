@@ -20,6 +20,8 @@ public class SQL {
 
     public SQL(Connection connection, ITableParameter table) {
         this.connection = connection;
+        if (!connection.isConnected())
+            connection.connect();
         table.build();
         this.table = new Table(table);
     }
@@ -27,7 +29,7 @@ public class SQL {
     public ResultSet executeQuery(IExecutableQuery query) {
         ResultSet result;
         try {
-            result = connection.getStatement().executeQuery(query.get());
+            result = connection.createStatement().executeQuery(query.get());
             return result;
         } catch (SQLException e) {
             System.out.print(e.getLocalizedMessage());
@@ -41,7 +43,7 @@ public class SQL {
                 executeQuery((IExecutableQuery) executable);
             else if (executable instanceof IExecutableUpdate)
                 executeUpdate((IExecutableUpdate) executable);
-            connection.getStatement().execute(executable.get());
+            connection.createStatement().execute(executable.get());
             return;
         } catch (SQLException e) {
             System.out.print(e.getLocalizedMessage());
@@ -51,8 +53,7 @@ public class SQL {
 
     public boolean contains(String value) {
         try {
-            String prepare = String.format(Util.SELECT_ALL_FROM_TABLE_WHERE_KEY, table, value);
-            System.out.print(prepare);
+            String prepare = String.format("SELECT * FROM '%s' WHERE %s=?", table, value);
             PreparedStatement statement = connection.getConnection().prepareStatement(prepare);
             boolean result = statement.executeQuery().next();
             statement.close();

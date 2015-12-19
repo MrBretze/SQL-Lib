@@ -15,8 +15,8 @@ public class Connection {
 
     private String db = "null";
     private java.sql.Connection connection = null;
-    private Statement statement = null;
     private DataBaseType type = DataBaseType.SQLite;
+    private boolean connected = false;
 
     private boolean local = false;
     private int port = 3306;
@@ -26,7 +26,6 @@ public class Connection {
 
     public Connection(File db, DataBaseType type) {
         local = true;
-
         if (db == null)
             throw new IllegalArgumentException("The file cant not be null !");
 
@@ -41,57 +40,60 @@ public class Connection {
                 e.printStackTrace();
             }
         }
-
         this.db = db.getAbsolutePath();
     }
 
-    public Connection(String host, String user, int port, String table, DataBaseType type) {
+    public Connection(String host, String user, String pass, int port, String table, DataBaseType type) {
         this.type = type;
         this.db = table;
         this.user = user;
+        this.pass = pass;
         this.host = host;
         this.port = port;
     }
 
     public synchronized void connect() {
+        connected = true;
         if (local) localConnect();
         else serverConnect();
     }
 
     public synchronized void close() {
         try {
+            connected = false;
             connection.close();
-            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void localConnect() {
+    private synchronized void localConnect() {
         try {
             Class.forName(type.getDriver()).newInstance();
             connection = DriverManager.getConnection("jdbc:" + type.getType() + ":" + db);
-            statement = connection.createStatement();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void serverConnect() {
+    private synchronized void serverConnect() {
         try {
             Class.forName(type.getDriver()).newInstance();
             connection = DriverManager.getConnection("jdbc:" + type.getType() + "://" + host + ":" + port + "/" + db + "?user=" + user + "&password=" + pass);
-            statement = connection.createStatement();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public Statement getStatement() {
-        return statement;
+    public Statement createStatement() throws SQLException {
+        return getConnection().createStatement();
     }
 
     public java.sql.Connection getConnection() {
         return connection;
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }
